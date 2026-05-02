@@ -1,155 +1,264 @@
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:url_launcher/url_launcher.dart';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HK Hospital Finder | 香港醫院搜尋器</title>
+    <style>
+        :root {
+            --primary: #0056b3;
+            --danger: #dc3545;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px; /* Space for emergency button */
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        h1 { margin: 0; font-size: 1.2rem; }
+        .lang-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .locate-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .hospital-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hospital-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
+        .hospital-info p { margin: 0; color: #666; font-size: 0.9rem; }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .badge-public { background-color: #17a2b8; }
+        .badge-private { background-color: #fd7e14; }
+        .call-btn {
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+        }
+        .emergency-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--danger);
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        }
+        .emergency-bar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: block;
+        }
+        #status-msg { text-align: center; margin-bottom: 15px; font-style: italic; color: #555; }
+    </style>
+</head>
+<body>
 
-void main() {
-  runApp(const HKHospitalApp());
-}
+    <header>
+        <h1 id="app-title">HK Hospital Finder</h1>
+        <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle">中文</button>
+    </header>
 
-class HKHospitalApp extends StatelessWidget {
-  const HKHospitalApp({super.key});
+    <div class="container">
+        <div class="controls">
+            <button class="locate-btn" onclick="getLocation()" id="locate-btn">📍 Find Nearest Hospital</button>
+        </div>
+        <div id="status-msg"></div>
+        <div id="hospital-list"></div>
+    </div>
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'HK Hospital Finder',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: const HospitalListScreen(),
-    );
-  }
-}
+    <div class="emergency-bar">
+        <a href="tel:999" id="emergency-btn">🚨 EMERGENCY CALL 999 🚨</a>
+    </div>
 
-// Data Model
-class Hospital {
-  final String name;
-  final String address;
-  final String phone;
-  final double lat;
-  final double lng;
-  final bool isPublic;
-  double? distance;
+    <script>
+        // Dictionary for i18n (Internationalization)
+        const i18n = {
+            en: {
+                title: "HK Hospital Finder",
+                toggle: "中文",
+                locateBtn: "📍 Find Nearest Hospital",
+                emergency: "🚨 EMERGENCY CALL 999 🚨",
+                statusLocating: "Getting your location...",
+                statusDenied: "Location access denied. Showing unsorted list.",
+                statusError: "Error getting location.",
+                public: "Public",
+                private: "Private",
+                away: "km away"
+            },
+            zh: {
+                title: "香港醫院搜尋器",
+                toggle: "English",
+                locateBtn: "📍 尋找最近醫院",
+                emergency: "🚨 緊急求救 999 🚨",
+                statusLocating: "正在獲取位置...",
+                statusDenied: "拒絕位置存取。顯示未排序列表。",
+                statusError: "獲取位置時發生錯誤。",
+                public: "公立",
+                private: "私家",
+                away: "公里"
+            }
+        };
 
-  Hospital({
-    required this.name,
-    required this.address,
-    required this.phone,
-    required this.lat,
-    required this.lng,
-    required this.isPublic,
-  });
-}
+        let currentLang = 'en';
 
-class HospitalListScreen extends StatefulWidget {
-  const HospitalListScreen({super.key});
+        // Hospital Database
+        let hospitals = [
+            { id: 1, nameEn: "Queen Mary Hospital", nameZh: "瑪麗醫院", phone: "22553838", lat: 22.268, lng: 114.131, isPublic: true },
+            { id: 2, nameEn: "Queen Elizabeth Hospital", nameZh: "伊利沙伯醫院", phone: "35068888", lat: 22.305, lng: 114.174, isPublic: true },
+            { id: 3, nameEn: "Prince of Wales Hospital", nameZh: "威爾斯親王醫院", phone: "35052211", lat: 22.381, lng: 114.202, isPublic: true },
+            { id: 4, nameEn: "Gleneagles Hospital", nameZh: "港怡醫院", phone: "31539000", lat: 22.247, lng: 114.171, isPublic: false },
+            { id: 5, nameEn: "HK Sanatorium & Hospital", nameZh: "養和醫院", phone: "25720211", lat: 22.269, lng: 114.182, isPublic: false },
+            { id: 6, nameEn: "Tuen Mun Hospital", nameZh: "屯門醫院", phone: "24685111", lat: 22.407, lng: 113.976, isPublic: true }
+        ];
 
-  @override
-  State<HospitalListScreen> createState() => _HospitalListScreenState();
-}
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            updateUI();
+            renderList();
+        }
 
-class _HospitalListScreenState extends State<HospitalListScreen> {
-  // Sample Data (Expand this with the full list provided earlier)
-  List<Hospital> hospitals = [
-    Hospital(name: "Queen Mary Hospital", address: "102 Pok Fu Lam Rd", phone: "22553838", lat: 22.268, lng: 114.131, isPublic: true),
-    Hospital(name: "Queen Elizabeth Hospital", address: "30 Gascoigne Rd", phone: "35068888", lat: 22.305, lng: 114.174, isPublic: true),
-    Hospital(name: "Gleneagles Hong Kong", address: "1 Nam Fung Path", phone: "31539000", lat: 22.247, lng: 114.171, isPublic: false),
-    Hospital(name: "Prince of Wales", address: "30-32 Ngan Shing St", phone: "35052211", lat: 22.381, lng: 114.202, isPublic: true),
-  ];
+        function updateUI() {
+            const t = i18n[currentLang];
+            document.getElementById('app-title').innerText = t.title;
+            document.getElementById('lang-toggle').innerText = t.toggle;
+            document.getElementById('locate-btn').innerText = t.locateBtn;
+            document.getElementById('emergency-btn').innerText = t.emergency;
+        }
 
-  Position? _currentPosition;
-  bool _isLoading = true;
+        // Haversine formula to calculate distance between two coordinates
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the earth in km
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2); 
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+            return R * c; // Distance in km
+        }
 
-  @override
-  void initState() {
-    super.initState();
-    _determinePosition();
-  }
+        function getLocation() {
+            const statusMsg = document.getElementById('status-msg');
+            const t = i18n[currentLang];
+            statusMsg.innerText = t.statusLocating;
 
-  // Location logic
-  Future<void> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        
+                        // Calculate distance for each hospital
+                        hospitals.forEach(h => {
+                            h.distance = calculateDistance(userLat, userLng, h.lat, h.lng);
+                        });
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return;
-    }
-
-    Position position = await Geolocator.getCurrentPosition();
-    setState(() {
-      _currentPosition = position;
-      // Calculate distances
-      for (var hospital in hospitals) {
-        hospital.distance = Geolocator.distanceBetween(
-          position.latitude,
-          position.longitude,
-          hospital.lat,
-          hospital.lng,
-        ) / 1000; // Convert to KM
-      }
-      // Sort by nearest
-      hospitals.sort((a, b) => a.distance!.compareTo(b.distance!));
-      _isLoading = false;
-    });
-  }
-
-  void _callHospital(String phoneNumber) async {
-    final Uri url = Uri.parse('tel:$phoneNumber');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Nearby HK Hospitals"),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _determinePosition,
-          )
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: hospitals.length,
-              itemBuilder: (context, index) {
-                final h = hospitals[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: h.isPublic ? Colors.green : Colors.orange,
-                      child: Text(h.isPublic ? "P" : "V", style: const TextStyle(color: Colors.white)),
-                    ),
-                    title: Text(h.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text("${h.distance?.toStringAsFixed(1)} km away\n${h.address}"),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.call, color: Colors.blue, size: 30),
-                      onPressed: () => _callHospital(h.phone),
-                    ),
-                    isThreeLine: true,
-                  ),
+                        // Sort array by closest distance
+                        hospitals.sort((a, b) => a.distance - b.distance);
+                        
+                        statusMsg.innerText = "";
+                        renderList();
+                    },
+                    (error) => {
+                        statusMsg.innerText = t.statusDenied;
+                        renderList();
+                    }
                 );
-              },
-            ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _callHospital("999"),
-        label: const Text("EMERGENCY 999"),
-        icon: const Icon(Icons.warning),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-}
+            } else {
+                statusMsg.innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function renderList() {
+            const listContainer = document.getElementById('hospital-list');
+            const t = i18n[currentLang];
+            listContainer.innerHTML = '';
+
+            hospitals.forEach(h => {
+                const name = currentLang === 'en' ? h.nameEn : h.nameZh;
+                const typeText = h.isPublic ? t.public : t.private;
+                const typeClass = h.isPublic ? 'badge-public' : 'badge-private';
+                const distanceStr = h.distance ? `<p>📍 ${h.distance.toFixed(2)} ${t.away}</p>` : '';
+
+                const card = `
+                    <div class="hospital-card">
+                        <div class="hospital-info">
+                            <span class="badge ${typeClass}">${typeText}</span>
+                            <h3>${name}</h3>
+                            ${distanceStr}
+                        </div>
+                        <a href="tel:${h.phone}" class="call-btn">📞 Call</a>
+                    </div>
+                `;
+                listContainer.innerHTML += card;
+            });
+        }
+
+        // Initialize App
+        updateUI();
+        renderList();
+    </script>
+</body>
+</html>
