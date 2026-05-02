@@ -3,227 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE MR. HO TRIBUTE | ST. MARK'S SCHOOL</title>
+    <title>THE LEGEND: MR. HO SHING HEI</title>
     <style>
         :root {
-            --midnight: #0a192f;
-            --electric-cyan: #64ffda;
-            --royal-gold: #fcc201;
-            --slate: #8892b0;
-            --white: #e6f1ff;
+            --primary-blue: #001f3f;
+            --gold-glow: #ffdf00;
+            --neon-blue: #00d4ff;
+            --field-green: #2ecc71;
         }
 
         body {
-            background-color: var(--midnight);
-            color: var(--white);
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Impact', 'Arial Black', sans-serif;
             margin: 0;
-            line-height: 1.6;
+            background-color: #050505;
+            color: white;
             overflow-x: hidden;
         }
 
-        /* Animated Background Elements */
-        .bg-glow {
+        /* Animated Background Text (Repeating Effect) */
+        .bg-scroll {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(100, 255, 218, 0.05) 0%, transparent 50%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
+            opacity: 0.05;
+            font-size: 5rem;
+            line-height: 1;
+            pointer-events: none;
+            user-select: none;
         }
 
-        /* Top Header Marquee */
-        .ticker {
-            background: var(--royal-gold);
-            color: #000;
-            padding: 12px 0;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 1.1rem;
-            border-bottom: 3px solid #000;
-        }
-
-        /* Hero Section */
         header {
-            padding: 80px 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #1a365d 0%, #000 100%);
             text-align: center;
+            border-bottom: 5px solid var(--gold-glow);
         }
 
-        .profile-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .profile-img {
-            width: 280px;
-            height: 280px;
-            border-radius: 20px;
-            object-fit: cover;
-            border: 4px solid var(--royal-gold);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .profile-img:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: var(--electric-cyan);
-            box-shadow: 0 30px 60px rgba(100, 255, 218, 0.2);
-        }
-
-        h1 {
-            font-size: 4.5rem;
-            margin: 20px 0 10px;
-            color: var(--white);
-            font-weight: 900;
-        }
-
-        .shining-name {
-            background: linear-gradient(to right, var(--royal-gold), #fff, var(--royal-gold));
+        .hero-title {
+            font-size: 6rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            background: linear-gradient(to bottom, #fff, var(--gold-glow));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
-            animation: shine 3s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 223, 0, 0.5));
         }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        .tagline {
-            color: var(--electric-cyan);
-            font-size: 1.5rem;
+        /* Marquee Effect for Repetitive Praise */
+        .marquee {
+            background: var(--gold-glow);
+            color: black;
+            padding: 10px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 5px;
-            margin-bottom: 40px;
         }
 
-        /* Content Sections */
-        .section-card {
-            max-width: 800px;
-            margin: 0 auto 40px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .content-section {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .highlight-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--neon-blue);
             padding: 40px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+            border-radius: 20px;
+            position: relative;
+            transition: 0.3s;
         }
 
-        .praise-loop {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--royal-gold);
-            margin-bottom: 20px;
+        .highlight-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px var(--neon-blue);
+        }
+
+        .praise-repeat {
+            color: var(--gold-glow);
+            font-size: 1.2rem;
             text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .big-phrase {
+            font-size: 3rem;
+            color: white;
+            margin: 10px 0;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-top: 30px;
         }
 
         .stat-item {
-            padding: 20px;
-            border: 1px solid rgba(100, 255, 218, 0.2);
-            border-radius: 10px;
+            border-left: 4px solid var(--gold-glow);
+            padding-left: 20px;
         }
 
-        .stat-item h4 {
-            color: var(--electric-cyan);
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
+        .footer {
+            text-align: center;
+            padding: 100px 20px;
+            background: #000;
         }
 
-        /* Footer Marquee */
-        .bottom-ticker {
-            background: var(--midnight);
-            color: var(--electric-cyan);
-            padding: 15px 0;
-            border-top: 1px solid var(--electric-cyan);
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        footer {
-            padding: 60px 20px;
-            color: var(--slate);
-            font-size: 0.9rem;
-        }
-
-        .highlight {
-            color: var(--royal-gold);
-        }
+        /* Repetition in Text */
+        .echo { opacity: 0.5; }
+        .echo-2 { opacity: 0.2; }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
-
-    <div class="ticker">
-        <marquee scrollamount="12">
-            🏆 BEST TEACHER IN THE HEART OF STUDENTS 🏆 PHYSICS GENIUS 🏆 THE PRIDE OF ST. MARK'S SCHOOL 🏆 MR. HO SHING HEI IS THE ULTIMATE GOAT 🏆 
-        </marquee>
+    <div class="bg-scroll">
+        PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS
+        STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM
+        LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE
     </div>
 
     <header>
-        <div class="profile-container">
-            <img src="http://googleusercontent.com/image_collection/image_retrieval/13239308598775116494_0" alt="Mr. Ho Shing Hei" class="profile-img">
-        </div>
-        <h1 class="shining-name">MR. HO SHING HEI</h1>
-        <div class="tagline">The Legend • The Mentor • The Icon</div>
+        <p class="praise-repeat">THE VISIONARY. THE MENTOR. THE PIONEER.</p>
+        <h1 class="hero-title">HO SHING HEI</h1>
+        <div class="big-phrase">DRIVEN BY DISCOVERY</div>
+        <p style="font-size: 1.5rem;">St. Mark's School Legend | Valley Lacrosse Icon</p>
     </header>
 
-    <main>
-        <section class="section-card">
-            <div class="praise-loop">
-                Praising him today. Praising him tomorrow. <br>
-                Praising him <span class="highlight">forever</span>.
-            </div>
-            <p style="font-size: 1.2rem; color: var(--slate);">
-                In the halls of St. Mark's School, one name echoes with absolute authority and warmth. 
-                Mr. Ho Shing Hei is not just an educator; he is the <span class="highlight">supernova</span> of the Science Department. 
-                His dedication is unmatched, his wisdom is infinite, and his impact is eternal!
-            </p>
-        </section>
-
-        <section class="section-card">
-            <h2 style="color: var(--electric-cyan); text-align: left; border-bottom: 2px solid var(--electric-cyan); padding-bottom: 10px;">LEGENDARY TRACK RECORD</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h4>Physics Olympiad</h4>
-                    <p>Mastermind behind First Class Honours and consistent student triumphs.</p>
-                </div>
-                <div class="stat-item">
-                    <h4>Innovation</h4>
-                    <p>Relentless mentor for the Youth Science & Technology Competition.</p>
-                </div>
-                <div class="stat-item">
-                    <h4>Academic Strength</h4>
-                    <p>Awe-inspiring demonstrations that turn complex physics into pure magic.</p>
-                </div>
-                <div class="stat-item">
-                    <h4>Student Support</h4>
-                    <p>Enduring enthusiasm that lights the spark of curiosity in every heart.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-card" style="text-align: center; border: 2px dashed var(--royal-gold);">
-            <h2 style="color: var(--royal-gold); margin: 0;">"THE BEST TEACHER IN THE HEART OF STUDENTS"</h2>
-            <p style="margin-top: 10px; font-style: italic;">— Every St. Mark's Student, Always.</p>
-        </section>
-    </main>
-
-    <div class="bottom-ticker">
-        <marquee direction="right" scrollamount="10">
-            MR. HO! MR. HO! MR. HO! MR. HO! MR. HO! MR. HO! MR. HO! MR. HO! MR. HO! MR. HO! MR. HO! MR. HO!
-        </marquee>
+    <div class="marquee">
+        <span>
+            PRECISION IN THE LAB, PASSION IN THE CLASSROOM • THE MENTOR BEHIND THE MEDALS • MASTER OF BOTH THE TEXTBOOK AND THE FIELD • THE GOLD STANDARD OF MENTORSHIP • PRECISION IN THE LAB, PASSION IN THE CLASSROOM • THE MENTOR BEHIND THE MEDALS • MASTER OF BOTH THE TEXTBOOK AND THE FIELD • THE GOLD STANDARD OF MENTORSHIP •
+        </span>
     </div>
 
-    <footer>
-        <p>This tribute is built with 100% admiration for Mr. S.H. Ho.</p>
-        <p>Powered by Physics, Innovation, and Greatness.</p>
-    </footer>
-
-</body>
-</html>
+    <div class="content-section">
+        
+        <div class="highlight-card">
+            <div class="praise-repeat">METICULOUS. METICULOUS. METICULOUS.</div>
+            <h2 class="big-phrase">SCIENCE IN MOTION</h2>
+            <p>Mr. Ho is the <strong>Architect of Future Minds</strong>. He doesn't just teach Physics; he commands it. Under his legendary guidance, St. Mark's has climbed to the peak of the Hong Kong Physics Olympiad.</p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>BEST SCHOOLS AWARD</h3>
+                    <p>Dominating the 2022 Physics Olympiad.</p>
+                </div>
+                <div class
