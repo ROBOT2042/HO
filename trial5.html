@@ -10,17 +10,19 @@
             --gold-glow: #ffdf00;
             --neon-blue: #00d4ff;
             --field-green: #2ecc71;
+            --text-light: #ffffff;
         }
 
         body {
             font-family: 'Impact', 'Arial Black', sans-serif;
             margin: 0;
             background-color: #050505;
-            color: white;
+            color: var(--text-light);
             overflow-x: hidden;
+            line-height: 1.4;
         }
 
-        /* Animated Background Text (Repeating Effect) */
+        /* Animated Background Text for Repetition */
         .bg-scroll {
             position: fixed;
             top: 0;
@@ -28,11 +30,11 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.05;
-            font-size: 5rem;
-            line-height: 1;
+            opacity: 0.03;
+            font-size: 4rem;
             pointer-events: none;
             user-select: none;
+            text-transform: uppercase;
         }
 
         header {
@@ -47,7 +49,7 @@
         }
 
         .hero-title {
-            font-size: 6rem;
+            font-size: clamp(3rem, 10vw, 6rem);
             margin: 0;
             text-transform: uppercase;
             letter-spacing: -2px;
@@ -57,29 +59,30 @@
             filter: drop-shadow(0 0 20px rgba(255, 223, 0, 0.5));
         }
 
-        /* Marquee Effect for Repetitive Praise */
         .marquee {
             background: var(--gold-glow);
             color: black;
-            padding: 10px 0;
+            padding: 12px 0;
             white-space: nowrap;
             overflow: hidden;
             font-weight: bold;
             text-transform: uppercase;
+            font-size: 1.2rem;
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
         }
 
         .marquee span {
             display: inline-block;
-            padding-left: 100%;
-            animation: marquee 20s linear infinite;
+            animation: marquee 25s linear infinite;
         }
 
         @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
-        .content-section {
+        .container {
             max-width: 1000px;
             margin: 50px auto;
             padding: 20px;
@@ -89,82 +92,90 @@
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid var(--neon-blue);
             padding: 40px;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
             border-radius: 20px;
+            transition: 0.4s;
             position: relative;
-            transition: 0.3s;
         }
 
         .highlight-card:hover {
             transform: scale(1.02);
-            box-shadow: 0 0 30px var(--neon-blue);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .praise-repeat {
             color: var(--gold-glow);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             text-transform: uppercase;
+            letter-spacing: 3px;
             margin-bottom: 10px;
         }
 
         .big-phrase {
-            font-size: 3rem;
-            color: white;
+            font-size: 2.8rem;
             margin: 10px 0;
+            color: #fff;
+            text-transform: uppercase;
         }
 
-        .stats-grid {
+        .grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
         }
 
-        .stat-item {
-            border-left: 4px solid var(--gold-glow);
-            padding-left: 20px;
+        .card {
+            background: rgba(0,0,0,0.5);
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
         }
 
-        .footer {
+        .card h3 { color: var(--gold-glow); margin-top: 0; }
+
+        .sports-box {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .echo-text {
             text-align: center;
-            padding: 100px 20px;
-            background: #000;
+            margin: 80px 0;
         }
 
-        /* Repetition in Text */
-        .echo { opacity: 0.5; }
-        .echo-2 { opacity: 0.2; }
+        .echo-1 { font-size: 4rem; opacity: 1; margin: 0; }
+        .echo-2 { font-size: 4rem; opacity: 0.5; margin: -10px 0 0 0; }
+        .echo-3 { font-size: 4rem; opacity: 0.2; margin: -10px 0 0 0; }
+
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            background: #000;
+            border-top: 1px solid #333;
+            font-family: sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 3.5rem; }
+            .big-phrase { font-size: 2rem; }
+            .sports-box { flex-direction: column; text-align: center; }
+        }
     </style>
 </head>
 <body>
 
     <div class="bg-scroll">
-        PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS
-        STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM
-        LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE
+        PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS PHYSICS<br>
+        LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE LACROSSE<br>
+        STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM STEAM<br>
+        LEADER LEADER LEADER LEADER LEADER LEADER LEADER LEADER
     </div>
 
     <header>
         <p class="praise-repeat">THE VISIONARY. THE MENTOR. THE PIONEER.</p>
         <h1 class="hero-title">HO SHING HEI</h1>
-        <div class="big-phrase">DRIVEN BY DISCOVERY</div>
-        <p style="font-size: 1.5rem;">St. Mark's School Legend | Valley Lacrosse Icon</p>
-    </header>
-
-    <div class="marquee">
-        <span>
-            PRECISION IN THE LAB, PASSION IN THE CLASSROOM • THE MENTOR BEHIND THE MEDALS • MASTER OF BOTH THE TEXTBOOK AND THE FIELD • THE GOLD STANDARD OF MENTORSHIP • PRECISION IN THE LAB, PASSION IN THE CLASSROOM • THE MENTOR BEHIND THE MEDALS • MASTER OF BOTH THE TEXTBOOK AND THE FIELD • THE GOLD STANDARD OF MENTORSHIP •
-        </span>
-    </div>
-
-    <div class="content-section">
-        
-        <div class="highlight-card">
-            <div class="praise-repeat">METICULOUS. METICULOUS. METICULOUS.</div>
-            <h2 class="big-phrase">SCIENCE IN MOTION</h2>
-            <p>Mr. Ho is the <strong>Architect of Future Minds</strong>. He doesn't just teach Physics; he commands it. Under his legendary guidance, St. Mark's has climbed to the peak of the Hong Kong Physics Olympiad.</p>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h3>BEST SCHOOLS AWARD</h3>
-                    <p>Dominating the 2022 Physics Olympiad.</p>
-                </div>
-                <div class
+        <div class="big-phrase" style="color: var(--gold-glow);">DRIVEN BY DISCOVERY</div>
