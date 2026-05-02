@@ -1,0 +1,155 @@
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+void main() {
+  runApp(const HKHospitalApp());
+}
+
+class HKHospitalApp extends StatelessWidget {
+  const HKHospitalApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'HK Hospital Finder',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+      ),
+      home: const HospitalListScreen(),
+    );
+  }
+}
+
+// Data Model
+class Hospital {
+  final String name;
+  final String address;
+  final String phone;
+  final double lat;
+  final double lng;
+  final bool isPublic;
+  double? distance;
+
+  Hospital({
+    required this.name,
+    required this.address,
+    required this.phone,
+    required this.lat,
+    required this.lng,
+    required this.isPublic,
+  });
+}
+
+class HospitalListScreen extends StatefulWidget {
+  const HospitalListScreen({super.key});
+
+  @override
+  State<HospitalListScreen> createState() => _HospitalListScreenState();
+}
+
+class _HospitalListScreenState extends State<HospitalListScreen> {
+  // Sample Data (Expand this with the full list provided earlier)
+  List<Hospital> hospitals = [
+    Hospital(name: "Queen Mary Hospital", address: "102 Pok Fu Lam Rd", phone: "22553838", lat: 22.268, lng: 114.131, isPublic: true),
+    Hospital(name: "Queen Elizabeth Hospital", address: "30 Gascoigne Rd", phone: "35068888", lat: 22.305, lng: 114.174, isPublic: true),
+    Hospital(name: "Gleneagles Hong Kong", address: "1 Nam Fung Path", phone: "31539000", lat: 22.247, lng: 114.171, isPublic: false),
+    Hospital(name: "Prince of Wales", address: "30-32 Ngan Shing St", phone: "35052211", lat: 22.381, lng: 114.202, isPublic: true),
+  ];
+
+  Position? _currentPosition;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _determinePosition();
+  }
+
+  // Location logic
+  Future<void> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return;
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition();
+    setState(() {
+      _currentPosition = position;
+      // Calculate distances
+      for (var hospital in hospitals) {
+        hospital.distance = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          hospital.lat,
+          hospital.lng,
+        ) / 1000; // Convert to KM
+      }
+      // Sort by nearest
+      hospitals.sort((a, b) => a.distance!.compareTo(b.distance!));
+      _isLoading = false;
+    });
+  }
+
+  void _callHospital(String phoneNumber) async {
+    final Uri url = Uri.parse('tel:$phoneNumber');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Nearby HK Hospitals"),
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _determinePosition,
+          )
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: hospitals.length,
+              itemBuilder: (context, index) {
+                final h = hospitals[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: h.isPublic ? Colors.green : Colors.orange,
+                      child: Text(h.isPublic ? "P" : "V", style: const TextStyle(color: Colors.white)),
+                    ),
+                    title: Text(h.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text("${h.distance?.toStringAsFixed(1)} km away\n${h.address}"),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.call, color: Colors.blue, size: 30),
+                      onPressed: () => _callHospital(h.phone),
+                    ),
+                    isThreeLine: true,
+                  ),
+                );
+              },
+            ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _callHospital("999"),
+        label: const Text("EMERGENCY 999"),
+        icon: const Icon(Icons.warning),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
