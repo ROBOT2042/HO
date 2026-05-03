@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supportive Hub | 支援中心</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary-color: #748cab;
+            --text-color: #3e5c76;
+            --accent-color: #afbdc4;
+            --emergency-red: #d9534f;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 750px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .lang-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .display-area {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: #fdfdfd;
+            border-radius: 15px;
+            border: 1px dashed var(--accent-color);
+        }
+
+        #random-quote {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #2d4059;
+            margin-bottom: 20px;
+        }
+
+        /* Hotline Styles */
+        .hotline-section {
+            background: #fff5f5;
+            border: 1px solid #ffcccc;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .hotline-title {
+            color: var(--emergency-red);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hotline-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) { .hotline-grid { grid-template-columns: 1fr; } }
+
+        .hotline-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--emergency-red);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .hotline-number {
+            font-weight: bold;
+            color: var(--emergency-red);
+            font-size: 1.1rem;
+        }
+
+        .form-section {
+            margin-top: 40px;
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .manual-list { margin-top: 40px; max-height: 300px; overflow-y: auto; }
+        .manual-item {
+            background: white; padding: 12px; margin-bottom: 8px;
+            border-left: 5px solid var(--accent-color); border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2 id="ui-title">Supportive Hub</h2>
+        <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle">繁體中文</button>
+    </header>
+
+    <div class="display-area">
+        <p id="ui-prompt">Take a deep breath. Here is a message for you:</p>
+        <div id="random-quote">"Loading kindness..."</div>
+        <button class="submit-btn" style="margin-top: 20px; width: auto; padding: 10px 30px;" onclick="showRandom()" id="ui-refresh">Give me support</button>
+    </div>
+
+    <div class="hotline-section">
+        <h3 class="hotline-title" id="ui-hotline-title">🆘 Need Professional Help?</h3>
+        <p style="font-size: 0.9rem; margin-bottom: 10px;" id="ui-hotline-desc">If you are in immediate danger, please call 999 or go to the nearest A&E.</p>
+        <div class="hotline-grid" id="hotline-container">
+            </div>
+    </div>
+
+    <div class="form-section">
+        <h3 id="ui-form-title">Add Your Own Kindness</h3>
+        <form id="support-form">
+            <input type="text" id="input-en" placeholder="English Support..." required style="width:100%; margin-bottom:10px; padding:10px; border-radius:8px; border:1px solid #ddd;">
+            <input type="text" id="input-hk" placeholder="廣東話支持..." required style="width:100%; margin-bottom:10px; padding:10px; border-radius:8px; border:1px solid #ddd;">
+            <button type="submit" class="submit-btn" id="ui-add-btn">Add to Manual</button>
+        </form>
+    </div>
+
+    <div class="manual-list">
+        <h4 id="ui-list-title">The Support Manual</h4>
+        <div id="list-items"></div>
+    </div>
+</div>
+
+<script>
+    const hotlines = [
+        { nameEn: "The Samaritans (Multilingual)", nameHk: "撒瑪利亞會 (多語言)", phone: "2896 0000", hours: "24 Hours" },
+        { nameEn: "Suicide Prevention Services", nameHk: "生命熱線", phone: "2382 0000", hours: "24 Hours" },
+        { nameEn: "Samaritan Befrienders HK", nameHk: "香港撒瑪利亞防止自殺會", phone: "2389 2222", hours: "24 Hours" },
+        { nameEn: "Social Welfare Dept Hotline", nameHk: "社會福利署熱線", phone: "2343 2255", hours: "24 Hours" },
+        { nameEn: "Mental Health Direct (HA)", nameHk: "醫院管理局精神健康專線", phone: "2466 7350", hours: "24 Hours" },
+        { nameEn: "Open Up (Online Text)", nameHk: "Open 噏 (網上文字支援)", phone: "9101 2012 (WA)", hours: "24 Hours" }
+    ];
+
+    const defaultMessages = [
+        { en: "I'm here for you.", hk: "我喺度。" },
+        { en: "One small step at a time is enough.", hk: "每次行一小步就已經足夠。" },
+        { en: "You’ve been carrying a lot lately. It's okay to feel tired.", hk: "呢排辛苦晒你喇，攰就唞下啦。" },
+        { en: "The storm will pass, stay safe in the meantime.", hk: "雨過總會天晴，而家最緊要照顧好自己。" }
+    ];
+
+    let messages = JSON.parse(localStorage.getItem('supportMessages')) || defaultMessages;
+    let currentLang = 'en';
+
+    const uiText = {
+        en: {
+            title: "Supportive Hub", toggle: "繁體中文", prompt: "Take a deep breath:", refresh: "Give me support",
+            hotlineTitle: "🆘 Need Professional Help?", 
+            hotlineDesc: "If you are in immediate danger, please call 999 or go to the nearest A&E.",
+            formTitle: "Add Your Own Kindness", addBtn: "Add to Manual", listTitle: "The Support Manual"
+        },
+        hk: {
+            title: "支援中心", toggle: "English", prompt: "深呼吸。送比你：", refresh: "比啲支持我",
+            hotlineTitle: "🆘 需要專業協助？", 
+            hotlineDesc: "如果你正處於緊急狀態，請即致電 999 或前往急症室。",
+            formTitle: "建立支援語句庫", addBtn: "新增到語句庫", listTitle: "支援手冊"
+        }
+    };
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'hk' : 'en';
+        updateUI();
+    }
+
+    function updateUI() {
+        const t = uiText[currentLang];
+        document.getElementById('ui-title').innerText = t.title;
+        document.getElementById('lang-toggle').innerText = t.toggle;
+        document.getElementById('ui-prompt').innerText = t.prompt;
+        document.getElementById('ui-refresh').innerText = t.refresh;
+        document.getElementById('ui-hotline-title').innerText = t.hotlineTitle;
+        document.getElementById('ui-hotline-desc').innerText = t.hotlineDesc;
+        document.getElementById('ui-form-title').innerText = t.formTitle;
+        document.getElementById('ui-add-btn').innerText = t.addBtn;
+        document.getElementById('ui-list-title').innerText = t.listTitle;
+        
+        renderHotlines();
+        showRandom();
+        renderList();
+    }
+
+    function renderHotlines() {
+        const container = document.getElementById('hotline-container');
+        container.innerHTML = '';
+        hotlines.forEach(h => {
+            const name = currentLang === 'en' ? h.nameEn : h.nameHk;
+            container.innerHTML += `
+                <div class="hotline-card">
+                    <div style="font-size:0.85rem; font-weight:bold;">${name}</div>
+                    <div class="hotline-number">${h.phone}</div>
+                    <div style="font-size:0.75rem; color:#888;">${h.hours}</div>
+                </div>
+            `;
+        });
+    }
+
+    function showRandom() {
+        const randomIndex = Math.floor(Math.random() * messages.length);
+        document.getElementById('random-quote').innerText = `"${messages[randomIndex][currentLang]}"`;
+    }
+
+    function renderList() {
+        const listDiv = document.getElementById('list-items');
+        listDiv.innerHTML = '';
+        messages.slice().reverse().forEach(m => {
+            const item = document.createElement('div');
+            item.className = 'manual-item';
+            item.innerText = m[currentLang];
+            listDiv.appendChild(item);
+        });
+    }
+
+    document.getElementById('support-form').onsubmit = function(e) {
+        e.preventDefault();
+        messages.push({ en: document.getElementById('input-en').value, hk: document.getElementById('input-hk').value });
+        localStorage.setItem('supportMessages', JSON.stringify(messages));
+        this.reset();
+        renderList();
+        showRandom();
+    };
+
+    updateUI();
+</script>
+</body>
+</html>
