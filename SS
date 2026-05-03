@@ -181,6 +181,38 @@
     ];
 
     const defaultMessages = [
+        // --- CATEGORY: ACKNOWLEDGING STRUGGLE (VALIDATION) ---
+        { en: "It's okay if all you did today was survive.", hk: "就算今日你淨係『生存到』，都已經好足夠。" },
+        { en: "You don't have to pretend to be okay with me.", hk: "喺我面前，你唔使夾硬扮到好似冇事咁。" },
+        { en: "Being tired of fighting doesn't mean you are weak.", hk: "覺得攰到唔想再撐落去，唔代表你係弱者。" },
+        { en: "Your pain is real, and I'm listening.", hk: "你嘅痛苦係真實嘅，我會喺度聽你講。" },
+        { en: "It’s heavy right now, and that’s a lot to carry.", hk: "而家呢刻係好沉重，辛苦你孭住咁多嘢。" },
+    
+        // --- CATEGORY: SMALL STEPS & PATIENCE ---
+        { en: "Progress isn't a straight line. Bad days are part of it.", hk: "好返嘅過程係會有起有跌，唔好因為今日差咗就怪自己。" },
+        { en: "Have you had a glass of water lately? Let's start there.", hk: "你今日飲咗水未呀？不如先去飲啖水先。" },
+        { en: "You don't have to see the whole staircase, just the next step.", hk: "你唔使睇到條路點行到尾，望住下一步就夠。" },
+        { en: "Give yourself permission to rest.", hk: "准許自己停落嚟唞下啦。" },
+        { en: "Be as kind to yourself as you are to others.", hk: "對自己好啲，好似你平時對其他人咁溫柔。" },
+    
+        // --- CATEGORY: REASSURING PRESENCE ---
+        { en: "I’m glad you told me. You don't have to carry this alone.", hk: "好彩你有同我講，你唔使再一個人孭起所有嘢。" },
+        { en: "If you need to disappear for a while to heal, I’ll be here when you get back.", hk: "如果你需要消失一陣子去療傷，我會喺返度等你返嚟。" },
+        { en: "You are not a burden to me.", hk: "對我嚟講，你從來都唔係負擔。" },
+        { en: "I might not understand exactly how you feel, but I care about you.", hk: "雖然我未必完全明白你嘅感受，但我真係好關心你。" },
+    
+        // --- CATEGORY: HOPE & FUTURE ---
+        { en: "This feeling is a tunnel, not a cave. There is an exit.", hk: "呢種感覺只係一條隧道，而唔係一個死胡同。一定有出口㗎。" },
+        { en: "The version of you that is hopeful will come back again.", hk: "嗰個充滿希望嘅你，遲早會返嚟。" },
+        { en: "You have survived 100% of your worst days so far.", hk: "你已經成功捱過咗之前所有最難過嘅日子，今次都一定可以。" },
+        { en: "The world is a better place with your light in it.", hk: "呢個世界有你嘅光芒，先至會變得更好。" },
+    
+        // --- CATEGORY: GENTLE REMINDERS ---
+        { en: "You are worth more than your productivity.", hk: "你嘅價值唔係取決於你做咗幾多嘢。" },
+        { en: "It's brave to stay. I'm proud of you.", hk: "留低係需要好大勇氣。我為你感到自豪。" },
+        { en: "Take a deep breath. You are safe here.", hk: "深呼吸。喺呢度，你係安全嘅。" },
+        { en: "Your existence is enough.", hk: "你嘅存在，就已經足夠。" }
+
         { en: "I'm here for you.", hk: "我喺度。" },
         { en: "One small step at a time is enough.", hk: "每次行一小步就已經足夠。" },
         { en: "You’ve been carrying a lot lately. It's okay to feel tired.", hk: "呢排辛苦晒你喇，攰就唞下啦。" },
